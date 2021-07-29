@@ -1,0 +1,47 @@
+@startuml
+
+class BigNum {
+    -num : BIGNUM
+    +ToString() : string
+}
+
+class ECGroup {
+    -group: EC_GROUP
+    +ECGroup()
+    +~ECGroup()
+}
+
+class ECPoint {
+    -group: shared_ptr<ECGroup>
+    -point: EC_POINT*
+
+    +ECPoint()
+    +~ECPoint()
+    +XCoord() : BigNum
+    +YCoord() : BigNum
+    +ToString() : string
+}
+
+class CustomCurve {
+    -group: shared_ptr<ECGroup>
+    -ctx : BN_CTX
+
+    +RandomScalar() : BIGNUM
+    +RandomPoint() : ECPoint
+    +Point(rawData: vector<uint8_t>) : ECPoint
+    +Point(x: vector<uint8_t>, ybit: uint8_t) : ECPoint
+    +Point2Vec(point: ECPoint) : vector<uint8_t>
+    +Point2VecCompressed(point: ECPoint) : vector<uint8_t>
+    +IsValidPoint(ECPoint) : bool
+    +Add(ECPoint, ECPoint) : ECPoint
+    +Multiply(BigNum, ECPoint) : ECPoint
+}
+
+CustomCurve *-- ECGroup
+CustomCurve -- ECPoint
+CustomCurve -- BigNum
+
+ECPoint *-- ECGroup
+ECPoint -- BigNum
+
+@enduml
