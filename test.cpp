@@ -50,7 +50,7 @@ static void print(const std::string& name, const ECPoint& p) {
     std::cout << name << ": " <<  p.ToString() << std::endl;
 }
 
-static EllipticCurve TestCurve()
+static EllipticCurve SecgK409Curve()
 {
     /* Binary data for the curve parameters for SECG K-409 curve*/
     std::vector<uint8_t> a = {
@@ -101,14 +101,14 @@ static EllipticCurve TestCurve()
 
     auto builder = ECBuilder();
 
-    builder.SetIrreducible(p).SetOrder(order).SetA(a).SetB(b).SetX(x).SetY(y);
+    builder.FieldSize(409).Irreducible(p).Order(order).A(a).B(b).X(x).Y(y);
 
-    return builder.Build();
+    return builder.BuildGF2m();
 }
 
 static void testAddition()
 {
-    auto curve = TestCurve();
+    auto curve = SecgK409Curve();
 
     auto p1 = curve.RandomPoint();
     auto p2 = curve.RandomPoint();
@@ -123,7 +123,7 @@ static void testAddition()
 
 static void testMultiplication()
 {
-    auto curve = TestCurve();
+    auto curve = SecgK409Curve();
 
     auto k = curve.RandomScalar();
     auto p1 = curve.RandomPoint();    
@@ -137,7 +137,7 @@ static void testMultiplication()
 
 static void testCompression()
 {
-    auto curve = TestCurve();
+    auto curve = SecgK409Curve();
 
     auto p1 = curve.RandomPoint();    
     auto buf = curve.Point2VecCompressed(p1);

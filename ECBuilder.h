@@ -36,6 +36,7 @@ namespace ecc
     class ECBuilder
     {
     public:
+        size_t fieldSize;
         BigNum p;
         BigNum order;
         BigNum a;
@@ -47,14 +48,20 @@ namespace ecc
         ECBuilder() = default;
         ~ECBuilder() = default;
 
-        ECBuilder& SetIrreducible(const BigNum& p);
-        ECBuilder& SetOrder(const BigNum& order);
-        ECBuilder& SetA(const BigNum& a);
-        ECBuilder& SetB(const BigNum& b);
-        ECBuilder& SetX(const BigNum& x);
-        ECBuilder& SetY(const BigNum& y);
+        ECBuilder& FieldSize(size_t size);
+        ECBuilder& Prime(const BigNum& p);
+        ECBuilder& Irreducible(const BigNum& p);
+        ECBuilder& Order(const BigNum& order);
+        ECBuilder& A(const BigNum& a);
+        ECBuilder& B(const BigNum& b);
+        ECBuilder& X(const BigNum& x);
+        ECBuilder& Y(const BigNum& y);
 
-        EllipticCurve Build() const;
+        EllipticCurve BuildGFp() const;
+        EllipticCurve BuildGF2m() const;
+
+    private:
+        void CheckParams() const;
     };
 }
 

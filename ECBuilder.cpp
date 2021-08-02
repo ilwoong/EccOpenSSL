@@ -23,47 +23,78 @@
  */
 
 #include "ECBuilder.h"
+#include "ECGroupGFp.h"
 #include "ECGroupGF2m.h"
 
 using namespace ecc;
 
-ECBuilder& ECBuilder::SetIrreducible(const BigNum& p)
+ECBuilder& ECBuilder::FieldSize(size_t size)
+{
+    fieldSize = size;
+    return *this;
+}
+
+ECBuilder& ECBuilder::Prime(const BigNum& p)
 {
     this->p = p;
     return *this;
 }
 
-ECBuilder& ECBuilder::SetOrder(const BigNum& order)
+ECBuilder& ECBuilder::Irreducible(const BigNum& p)
+{
+    this->p = p;
+    return *this;
+}
+
+ECBuilder& ECBuilder::Order(const BigNum& order)
 {
     this->order = order;
     return *this;
 }
 
-ECBuilder& ECBuilder::SetA(const BigNum& a)
+ECBuilder& ECBuilder::A(const BigNum& a)
 {
     this->a = a;
     return *this;
 }
 
-ECBuilder& ECBuilder::SetB(const BigNum& b)
+ECBuilder& ECBuilder::B(const BigNum& b)
 {
     this->b = b;
     return *this;
 }
 
-ECBuilder& ECBuilder::SetX(const BigNum& x)
+ECBuilder& ECBuilder::X(const BigNum& x)
 {
     this->x = x;
     return *this;
 }
 
-ECBuilder& ECBuilder::SetY(const BigNum& y)
+ECBuilder& ECBuilder::Y(const BigNum& y)
 {
     this->y = y;
     return *this;
 }
 
-EllipticCurve ECBuilder::Build() const
+EllipticCurve ECBuilder::BuildGFp() const
+{
+    CheckParams();
+
+    auto group = std::make_shared<ECGroupGFp>(fieldSize);
+    group->SetParameters(p, order, a, b, x, y);
+    return EllipticCurve(group);
+}
+
+EllipticCurve ECBuilder::BuildGF2m() const
+{
+    CheckParams();
+
+    auto group = std::make_shared<ECGroupGF2m>(fieldSize);
+    group->SetParameters(p, order, a, b, x, y);
+    return EllipticCurve(group);
+}
+
+void ECBuilder::CheckParams() const
 {
     if (p.Empty()) {
         throw std::invalid_argument("ECBuilder: curve parameter p is empty");
@@ -88,8 +119,4 @@ EllipticCurve ECBuilder::Build() const
     if (y.Empty()) {
         throw std::invalid_argument("ECBuilder: curve parameter y is empty");
     }
-
-    auto group = std::make_shared<ECGroupGF2m>(409);
-    group->SetParameters(p, order, a, b, x, y);
-    return EllipticCurve(group);
 }
