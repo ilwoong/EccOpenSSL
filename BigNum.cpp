@@ -23,6 +23,7 @@
  */
 
 #include "BigNum.h"
+#include "ECPoint.h"
 
 #include <sstream>
 #include <iomanip>
@@ -52,6 +53,11 @@ BigNum::~BigNum()
 bool BigNum::Empty() const
 {
     return num == nullptr;
+}
+
+BIGNUM* BigNum::Data() const
+{
+    return num;
 }
 
 BigNum& BigNum::operator=(const BigNum& other)

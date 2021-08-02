@@ -54,9 +54,6 @@ namespace ecc
         std::vector<uint8_t> Point2VecCompressed(const ECPoint& point);
 
         bool IsValidPoint(const ECPoint& point) const;
-        
-        ECPoint Add(const ECPoint& lhs, const ECPoint& rhs) const;
-        ECPoint Multiply(const BigNum& lhs, const ECPoint& rhs) const;
     };
 }
 

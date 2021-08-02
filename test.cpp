@@ -111,8 +111,8 @@ static void testAddition()
     auto curve = SecgK409Curve();
 
     auto p1 = curve.RandomPoint();
-    auto p2 = curve.RandomPoint();
-    auto p3 = curve.Add(p1, p2);
+    auto p2 = curve.RandomPoint();    
+    auto p3 = p1 + p2;
 
     print("Point Addition", curve.IsValidPoint(p3));
     print("p1", p1);
@@ -127,8 +127,8 @@ static void testMultiplication()
 
     auto k = curve.RandomScalar();
     auto p1 = curve.RandomPoint();    
-    auto p2 = curve.Multiply(k, p1);
-
+    auto p2 = k * p1;
+    
     print("Point Multiplication", curve.IsValidPoint(p2));
     print("p1", p1);
     print("p2", p2);

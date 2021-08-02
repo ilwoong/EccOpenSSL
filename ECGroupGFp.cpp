@@ -50,7 +50,7 @@ bool ECGroupGFp::SetParameters(const BigNum& p, const BigNum& order, const BigNu
     }
 
     /* Create the curve */
-    if(NULL == (group = EC_GROUP_new_curve_GFp(p.num, a.num, b.num, ctx))) {
+    if(NULL == (group = EC_GROUP_new_curve_GFp(p.Data(), a.Data(), b.Data(), ctx))) {
         handleErrors("EC_GROUP_new_curve_GFp");
         return false;
     }
@@ -61,13 +61,13 @@ bool ECGroupGFp::SetParameters(const BigNum& p, const BigNum& order, const BigNu
         return false;
     }
 
-    if(1 != EC_POINT_set_affine_coordinates_GFp(group, generator, x.num, y.num, ctx)) {
+    if(1 != EC_POINT_set_affine_coordinates_GFp(group, generator, x.Data(), y.Data(), ctx)) {
         handleErrors("EC_POINT_set_affine_coordinates_GFp");
         return false;
     }
 
     /* Set the generator and the order */
-    if(1 != EC_GROUP_set_generator(group, generator, order.num, NULL)) {
+    if(1 != EC_GROUP_set_generator(group, generator, order.Data(), NULL)) {
         handleErrors("EC_GROUP_set_generator");
         return false;
     }

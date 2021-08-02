@@ -57,7 +57,7 @@ ECPoint EllipticCurve::RandomPoint()
     auto k = RandomScalar();
     EC_POINT* point = EC_POINT_new(group->Group());
 
-    EC_POINT_mul(group->Group(), point, k.num, NULL, NULL, ctx);
+    EC_POINT_mul(group->Group(), point, k.Data(), NULL, NULL, ctx);
 
     return ECPoint(group, point);
 }
@@ -78,7 +78,7 @@ ECPoint EllipticCurve::Point(const std::vector<uint8_t>& x, uint8_t ybit)
     auto bnx = BigNum(x);
     EC_POINT* point = EC_POINT_new(group->Group());
 
-    EC_POINT_set_compressed_coordinates(group->Group(), point, bnx.num, ybit & 0x1, ctx);
+    EC_POINT_set_compressed_coordinates(group->Group(), point, bnx.Data(), ybit & 0x1, ctx);
 
     return ECPoint(group, point);
 }
@@ -87,7 +87,7 @@ std::vector<uint8_t> EllipticCurve::Point2Vec(const ECPoint& point)
 {
     auto len = group->FieldSizeInBytes() * 2 + 1;
     std::vector<uint8_t> vec(len);
-    EC_POINT_point2oct(group->Group(), point.point, point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED, vec.data(), len, ctx);
+    EC_POINT_point2oct(group->Group(), point.Point(), point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED, vec.data(), len, ctx);
 
     return vec;
 }
@@ -96,30 +96,12 @@ std::vector<uint8_t> EllipticCurve::Point2VecCompressed(const ECPoint& point)
 {
     auto len = group->FieldSizeInBytes() + 1;
     std::vector<uint8_t> vec(len);
-    EC_POINT_point2oct(group->Group(), point.point, point_conversion_form_t::POINT_CONVERSION_COMPRESSED, vec.data(), len, ctx);
+    EC_POINT_point2oct(group->Group(), point.Point(), point_conversion_form_t::POINT_CONVERSION_COMPRESSED, vec.data(), len, ctx);
 
     return vec;
 }
 
 bool EllipticCurve::IsValidPoint(const ECPoint& point) const
 {
-    return 1 == EC_POINT_is_on_curve(group->Group(), point.point, ctx);
-}
-
-ECPoint EllipticCurve::Add(const ECPoint& lhs, const ECPoint& rhs) const
-{
-    EC_POINT* point = EC_POINT_new(group->Group());
-
-    EC_POINT_add(group->Group(), point, lhs.point, rhs.point, ctx);
-
-    return ECPoint(group, point);
-}
-
-ECPoint EllipticCurve::Multiply(const BigNum& lhs, const ECPoint& rhs) const
-{
-    EC_POINT* point = EC_POINT_new(group->Group());
-
-    EC_POINT_mul(group->Group(), point, NULL, rhs.point, lhs.num, ctx);
-
-    return ECPoint(group, point);
+    return 1 == EC_POINT_is_on_curve(group->Group(), point.Point(), ctx);
 }

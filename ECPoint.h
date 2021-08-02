@@ -36,7 +36,7 @@ namespace ecc
 {
     class ECPoint 
     {
-    public:
+    private:
         std::shared_ptr<ECGroup> group;
         EC_POINT *point;
         BigNum x;
@@ -49,12 +49,18 @@ namespace ecc
         ~ECPoint();
 
         ECPoint& operator=(const ECPoint& other);
+        ECPoint operator+(const ECPoint& other);
+        ECPoint operator*(const BigNum& num);        
 
+        std::shared_ptr<ECGroup> Group() const;
+        EC_POINT* Point() const;
         BigNum XCoord() const;
         BigNum YCoord() const;
 
         const std::string ToString() const;
     };
+
+    ECPoint operator*(const BigNum& num, const ECPoint& point);
 }
 
 #endif

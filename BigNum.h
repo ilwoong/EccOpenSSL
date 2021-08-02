@@ -33,7 +33,7 @@ namespace ecc
 {
     class BigNum
     {
-    public:
+    private:
         BIGNUM *num;
 
     public:
@@ -42,9 +42,10 @@ namespace ecc
         BigNum(const std::vector<uint8_t>& data);
         BigNum(BIGNUM* bn);
         ~BigNum();
-
+        
         bool Empty() const;
-        BigNum& operator=(const BigNum& other);        
+        BIGNUM* Data() const;
+        BigNum& operator=(const BigNum& other);
         const std::string ToString() const;        
     };
 }

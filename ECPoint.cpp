@@ -34,7 +34,7 @@ ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group) : ECPoint(group, EC_POIN
 
 ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, EC_POINT* point) : group(group), point(point), x(BigNum(BN_new())), y(BigNum(BN_new()))
 {
-    EC_POINT_get_affine_coordinates_GF2m(group->Group(), point, x.num, y.num, NULL);
+    EC_POINT_get_affine_coordinates_GF2m(group->Group(), point, x.Data(), y.Data(), NULL);
 }
 
 ECPoint::~ECPoint()
@@ -60,6 +60,34 @@ ECPoint& ECPoint::operator=(const ECPoint& other)
     return *this;
 }
 
+ECPoint ECPoint::operator+(const ECPoint& other)
+{
+    if (group != other.Group()) {
+        throw std::invalid_argument("ECPoint add: two points are not on the same curve");
+    }
+
+    EC_POINT* result = EC_POINT_new(group->Group());
+    EC_POINT_add(group->Group(), result, point, other.point, NULL);
+    return ECPoint(group, result);
+}
+
+ECPoint ECPoint::operator*(const BigNum& num)
+{
+    EC_POINT* result = EC_POINT_new(group->Group());
+    EC_POINT_mul(group->Group(), result, NULL, point, num.Data(), NULL);
+    return ECPoint(group, result);
+}
+
+std::shared_ptr<ECGroup> ECPoint::Group() const
+{
+    return group;
+}
+
+EC_POINT* ECPoint::Point() const
+{
+    return point;
+}
+
 BigNum ECPoint::XCoord() const
 {
     return x;
@@ -73,4 +101,12 @@ BigNum ECPoint::YCoord() const
 const std::string ECPoint::ToString() const
 {
     return "(" + x.ToString() + ", " + y.ToString() + ")";
+}
+
+ECPoint ecc::operator*(const BigNum& num, const ECPoint& point)
+{
+    auto group = point.Group();
+    EC_POINT* result = EC_POINT_new(group->Group());
+    EC_POINT_mul(group->Group(), result, NULL, point.Point(), num.Data(), NULL);
+    return ECPoint(group, result);
 }
