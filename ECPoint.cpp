@@ -60,7 +60,7 @@ ECPoint& ECPoint::operator=(const ECPoint& other)
     return *this;
 }
 
-ECPoint ECPoint::operator+(const ECPoint& other)
+ECPoint ECPoint::operator+(const ECPoint& other) const
 {
     if (group != other.Group()) {
         throw std::invalid_argument("ECPoint add: two points are not on the same curve");
@@ -71,7 +71,7 @@ ECPoint ECPoint::operator+(const ECPoint& other)
     return ECPoint(group, result);
 }
 
-ECPoint ECPoint::operator*(const BigNum& num)
+ECPoint ECPoint::operator*(const BigNum& num) const
 {
     EC_POINT* result = EC_POINT_new(group->Group());
     EC_POINT_mul(group->Group(), result, NULL, point, num.Data(), NULL);
@@ -105,8 +105,5 @@ const std::string ECPoint::ToString() const
 
 ECPoint ecc::operator*(const BigNum& num, const ECPoint& point)
 {
-    auto group = point.Group();
-    EC_POINT* result = EC_POINT_new(group->Group());
-    EC_POINT_mul(group->Group(), result, NULL, point.Point(), num.Data(), NULL);
-    return ECPoint(group, result);
+    return point * num;
 }

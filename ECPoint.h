@@ -49,8 +49,8 @@ namespace ecc
         ~ECPoint();
 
         ECPoint& operator=(const ECPoint& other);
-        ECPoint operator+(const ECPoint& other);
-        ECPoint operator*(const BigNum& num);        
+        ECPoint operator+(const ECPoint& other) const;
+        ECPoint operator*(const BigNum& num) const;
 
         std::shared_ptr<ECGroup> Group() const;
         EC_POINT* Point() const;
