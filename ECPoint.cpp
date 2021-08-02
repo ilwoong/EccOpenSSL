@@ -34,7 +34,7 @@ ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group) : ECPoint(group, EC_POIN
 
 ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, EC_POINT* point) : group(group), point(point), x(BigNum(BN_new())), y(BigNum(BN_new()))
 {
-    EC_POINT_get_affine_coordinates_GFp(group->Group(), point, x.num, y.num, NULL);
+    EC_POINT_get_affine_coordinates_GF2m(group->Group(), point, x.num, y.num, NULL);
 }
 
 ECPoint::~ECPoint()

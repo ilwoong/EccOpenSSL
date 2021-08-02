@@ -22,29 +22,39 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_EC_GROUP_H__
-#define __ECC_EC_GROUP_H__
+#ifndef __ECC_EC_BUILDER_H__
+#define __ECC_EC_BUILDER_H__
 
-#include <openssl/ec.h>
+#include <vector>
+#include <cstdint>
+
 #include "BigNum.h"
+#include "EllipticCurve.h"
 
 namespace ecc 
 {
-    class ECGroup {
-    protected:
-        EC_GROUP* group;
-        size_t fieldSize;
+    class ECBuilder
+    {
+    public:
+        BigNum p;
+        BigNum order;
+        BigNum a;
+        BigNum b;
+        BigNum x;
+        BigNum y;
 
     public:
-        ECGroup(size_t fieldSize);
-        ECGroup(const ECGroup& other);
-        virtual ~ECGroup();
+        ECBuilder() = default;
+        ~ECBuilder() = default;
 
-        virtual bool SetParameters(const BigNum& p, const BigNum& order, const BigNum& a, const BigNum& b, const BigNum& x, const BigNum& y) = 0;
+        ECBuilder& SetIrreducible(const BigNum& p);
+        ECBuilder& SetOrder(const BigNum& order);
+        ECBuilder& SetA(const BigNum& a);
+        ECBuilder& SetB(const BigNum& b);
+        ECBuilder& SetX(const BigNum& x);
+        ECBuilder& SetY(const BigNum& y);
 
-        size_t FieldSize() const;
-        size_t FieldSizeInBytes() const;
-        EC_GROUP* Group();
+        EllipticCurve Build() const;
     };
 }
 

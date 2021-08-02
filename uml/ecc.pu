@@ -2,18 +2,31 @@
 
 class BigNum {
     -num : BIGNUM
+    +BigNum()
+    +BigNum(other: BigNum)
+    +BigNum(data: vector<uint8_t>)
+    +BigNum(bn: BIGNUM*)
+    +~BigNum()
+    +operator+(other: BigNum)
     +ToString() : string
 }
 
 class ECGroup {
     -group: EC_GROUP
-    +ECGroup()
+    -fieldSize: size_t
+    +ECGroup(fieldSize: size_t)
+    +ECGropu(other: ECGroup)
     +~ECGroup()
+    +FieldSize() : size_t
+    +FieldSizeInBytes() : size_t
+    +Group() : EC_GROUP*
 }
 
 class ECPoint {
     -group: shared_ptr<ECGroup>
     -point: EC_POINT*
+    -x: BigNum
+    -y: BigNum
 
     +ECPoint()
     +~ECPoint()
@@ -22,7 +35,7 @@ class ECPoint {
     +ToString() : string
 }
 
-class CustomCurve {
+class EllipticCurve {
     -group: shared_ptr<ECGroup>
     -ctx : BN_CTX
 
@@ -37,9 +50,9 @@ class CustomCurve {
     +Multiply(BigNum, ECPoint) : ECPoint
 }
 
-CustomCurve *-- ECGroup
-CustomCurve -- ECPoint
-CustomCurve -- BigNum
+EllipticCurve *-- ECGroup
+EllipticCurve -- ECPoint
+EllipticCurve -- BigNum
 
 ECPoint *-- ECGroup
 ECPoint -- BigNum

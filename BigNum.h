@@ -43,8 +43,9 @@ namespace ecc
         BigNum(BIGNUM* bn);
         ~BigNum();
 
-        BigNum& operator=(const BigNum& other);
-        const std::string ToString() const;
+        bool Empty() const;
+        BigNum& operator=(const BigNum& other);        
+        const std::string ToString() const;        
     };
 }
 

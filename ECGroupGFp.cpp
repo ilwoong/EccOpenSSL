@@ -22,65 +22,58 @@
  * SOFTWARE.
  */
 
+#include "ECGroupGFp.h"
 #include "BigNum.h"
-
-#include <sstream>
-#include <iomanip>
+#include <vector>
 
 using namespace ecc;
 
-BigNum::BigNum() : BigNum(nullptr)
+static void handleErrors(const std::string& msg)
 {}
 
-BigNum::BigNum(const BigNum& other) : BigNum(BN_dup(other.num))
+// curve_GF2m : polynomial basis
+ECGroupGFp::ECGroupGFp(size_t fieldSize) : ECGroup(fieldSize)
 {}
 
-BigNum::BigNum(const std::vector<uint8_t>& data) : BigNum(BN_bin2bn(data.data(), data.size(), NULL))
+ECGroupGFp::~ECGroupGFp()
 {}
 
-BigNum::BigNum(BIGNUM* bn) : num(bn)
-{}
-
-BigNum::~BigNum()
+bool ECGroupGFp::SetParameters(const BigNum& p, const BigNum& order, const BigNum& a, const BigNum& b, const BigNum& x, const BigNum& y)
 {
-    if (num != nullptr) {
-        BN_free(num);
-        num = nullptr;
-    }
-}
+    BN_CTX *ctx;
+    EC_POINT *generator;
 
-bool BigNum::Empty() const
-{
-    return num == nullptr;
-}
-
-BigNum& BigNum::operator=(const BigNum& other)
-{
-    if (num != nullptr) {
-        BN_free(num);
-        num = nullptr;
+    /* Set up the BN_CTX */
+    if(NULL == (ctx = BN_CTX_new())) {
+        handleErrors("BN_CTX_new");
+        return false;
     }
 
-    if (other.num != nullptr) {
-        num = BN_dup(other.num);
+    /* Create the curve */
+    if(NULL == (group = EC_GROUP_new_curve_GFp(p.num, a.num, b.num, ctx))) {
+        handleErrors("EC_GROUP_new_curve_GFp");
+        return false;
     }
 
-    return *this;
-}
-
-const std::string BigNum::ToString() const
-{
-    auto len = BN_num_bytes(num);
-    std::vector<uint8_t> vec(len);
-    BN_bn2bin(num, vec.data());
-    
-    std::ostringstream oss;
-    
-    oss << std::hex;
-    for (auto letter : vec) {
-        oss << std::setfill('0') << std::setw(2) << +letter;
+    /* Create the generator */
+    if(NULL == (generator = EC_POINT_new(group))) {
+        handleErrors("EC_POINT_new");
+        return false;
     }
-    oss << std::dec;
 
-    return oss.str();
+    if(1 != EC_POINT_set_affine_coordinates_GFp(group, generator, x.num, y.num, ctx)) {
+        handleErrors("EC_POINT_set_affine_coordinates_GFp");
+        return false;
+    }
+
+    /* Set the generator and the order */
+    if(1 != EC_GROUP_set_generator(group, generator, order.num, NULL)) {
+        handleErrors("EC_GROUP_set_generator");
+        return false;
+    }
+
+    EC_POINT_free(generator);
+    BN_CTX_free(ctx);
+
+    return true;
 }

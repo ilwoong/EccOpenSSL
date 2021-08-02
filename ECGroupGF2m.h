@@ -22,42 +22,20 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_CUSTOM_CURVE_H__
-#define __ECC_CUSTOM_CURVE_H__
+#ifndef __ECC_EC_GROUP_GF2M_H__
+#define __ECC_EC_GROUP_GF2M_H__
 
-#include "BigNum.h"
 #include "ECGroup.h"
-#include "ECPoint.h"
-
-#include <vector>
-#include <memory>
 
 namespace ecc 
 {
-    class CustomCurve 
-    {
+    // ECGroupGF2m : polynomial basis
+    class ECGroupGF2m : public ECGroup {
     public:
-        std::shared_ptr<ECGroup> group;
-        BN_CTX *ctx;
+        ECGroupGF2m(size_t fieldSize);
+        ~ECGroupGF2m();
 
-    public:
-        CustomCurve();
-        ~CustomCurve();
-
-        size_t BitCount() const;
-
-        BigNum RandomScalar();
-        
-        ECPoint RandomPoint();        
-        ECPoint Point(const std::vector<uint8_t>& rawData);
-        ECPoint Point(const std::vector<uint8_t>& x, uint8_t ybit);
-        std::vector<uint8_t> Point2Vec(const ECPoint& point);
-        std::vector<uint8_t> Point2VecCompressed(const ECPoint& point);
-
-        bool IsValidPoint(const ECPoint& point) const;
-        
-        ECPoint Add(const ECPoint& lhs, const ECPoint& rhs) const;
-        ECPoint Multiply(const BigNum& lhs, const ECPoint& rhs) const;
+        bool SetParameters(const BigNum& p, const BigNum& order, const BigNum& a, const BigNum& b, const BigNum& x, const BigNum& y) override;
     };
 }
 

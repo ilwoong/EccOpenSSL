@@ -22,29 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_EC_GROUP_H__
-#define __ECC_EC_GROUP_H__
+#ifndef __ECC_ELLIPTIC_CURVE_H__
+#define __ECC_ELLIPTIC_CURVE_H__
 
-#include <openssl/ec.h>
 #include "BigNum.h"
+#include "ECGroup.h"
+#include "ECPoint.h"
+
+#include <vector>
+#include <memory>
 
 namespace ecc 
 {
-    class ECGroup {
-    protected:
-        EC_GROUP* group;
-        size_t fieldSize;
+    class EllipticCurve 
+    {
+    public:
+        std::shared_ptr<ECGroup> group;
+        BN_CTX *ctx;
 
     public:
-        ECGroup(size_t fieldSize);
-        ECGroup(const ECGroup& other);
-        virtual ~ECGroup();
+        EllipticCurve();
+        EllipticCurve(const std::shared_ptr<ECGroup>& group);
+        ~EllipticCurve();
 
-        virtual bool SetParameters(const BigNum& p, const BigNum& order, const BigNum& a, const BigNum& b, const BigNum& x, const BigNum& y) = 0;
+        BigNum RandomScalar();
+        
+        ECPoint RandomPoint();        
+        ECPoint Point(const std::vector<uint8_t>& rawData);
+        ECPoint Point(const std::vector<uint8_t>& x, uint8_t ybit);
+        std::vector<uint8_t> Point2Vec(const ECPoint& point);
+        std::vector<uint8_t> Point2VecCompressed(const ECPoint& point);
 
-        size_t FieldSize() const;
-        size_t FieldSizeInBytes() const;
-        EC_GROUP* Group();
+        bool IsValidPoint(const ECPoint& point) const;
+        
+        ECPoint Add(const ECPoint& lhs, const ECPoint& rhs) const;
+        ECPoint Multiply(const BigNum& lhs, const ECPoint& rhs) const;
     };
 }
 

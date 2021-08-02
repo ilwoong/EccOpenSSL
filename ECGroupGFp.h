@@ -22,29 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_EC_GROUP_H__
-#define __ECC_EC_GROUP_H__
+#ifndef __ECC_EC_GROUP_GFP_H__
+#define __ECC_EC_GROUP_GFP_H__
 
-#include <openssl/ec.h>
-#include "BigNum.h"
+#include "ECGroup.h"
 
 namespace ecc 
 {
-    class ECGroup {
-    protected:
-        EC_GROUP* group;
-        size_t fieldSize;
-
+    class ECGroupGFp : public ECGroup {
     public:
-        ECGroup(size_t fieldSize);
-        ECGroup(const ECGroup& other);
-        virtual ~ECGroup();
+        ECGroupGFp(size_t fieldSize);
+        ~ECGroupGFp();
 
-        virtual bool SetParameters(const BigNum& p, const BigNum& order, const BigNum& a, const BigNum& b, const BigNum& x, const BigNum& y) = 0;
-
-        size_t FieldSize() const;
-        size_t FieldSizeInBytes() const;
-        EC_GROUP* Group();
+        bool SetParameters(const BigNum& p, const BigNum& order, const BigNum& a, const BigNum& b, const BigNum& x, const BigNum& y) override;
     };
 }
 
