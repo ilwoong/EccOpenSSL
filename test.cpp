@@ -106,10 +106,8 @@ static EllipticCurve SecgK409Curve()
     return builder.BuildGF2m();
 }
 
-static void testAddition()
+static void testAddition(EllipticCurve& curve)
 {
-    auto curve = SecgK409Curve();
-
     auto p1 = curve.RandomPoint();
     auto p2 = curve.RandomPoint();    
     auto p3 = p1 + p2;
@@ -121,10 +119,8 @@ static void testAddition()
     std::cout << std::endl;
 }
 
-static void testMultiplication()
+static void testMultiplication(EllipticCurve& curve)
 {
-    auto curve = SecgK409Curve();
-
     auto k = curve.RandomScalar();
     auto p1 = curve.RandomPoint();    
     auto p2 = k * p1;
@@ -135,10 +131,8 @@ static void testMultiplication()
     std::cout << std::endl;
 }
 
-static void testCompression()
+static void testCompression(EllipticCurve& curve)
 {
-    auto curve = SecgK409Curve();
-
     auto p1 = curve.RandomPoint();    
     auto buf = curve.Point2VecCompressed(p1);
     std::vector<uint8_t> x;
@@ -157,11 +151,19 @@ static void testCompression()
     std::cout << std::endl;
 }
 
+#include "BasisConvertMatrix.h"
+
 int main(int argc, const char** argv)
 {
-    testAddition();
-    testMultiplication();
-    testCompression();
+    auto curve = SecgK409Curve();
+
+    testAddition(curve);
+    testMultiplication(curve);
+    testCompression(curve);
+
+    auto matrix = BasisConvertMatrix(431, 5, BigNum());
+
+    std::cout << matrix[0][0] << std::endl;
     
     return 0;
 }

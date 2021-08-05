@@ -90,3 +90,12 @@ const std::string BigNum::ToString() const
 
     return oss.str();
 }
+
+std::vector<uint8_t> BigNum::ToByteVector() const
+{
+    auto result = std::vector<uint8_t>();
+
+    throw std::runtime_error("not implemented yet");
+
+    return result;
+}

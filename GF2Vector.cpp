@@ -22,34 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_BIG_NUM_H__
-#define __ECC_BIG_NUM_H__
+#include "GF2Vector.h"
 
-#include <openssl/bn.h>
-#include <vector>
-#include <string>
+using namespace ecc;
 
-namespace ecc 
+GF2Vector GF2Vector::operator*(const BasisConvertMatrix& matrix) const
 {
-    class BigNum
-    {
-    private:
-        BIGNUM *num;
-
-    public:
-        BigNum();
-        BigNum(const BigNum& other);
-        BigNum(const std::vector<uint8_t>& data);
-        BigNum(BIGNUM* bn);
-        ~BigNum();
-        
-        bool Empty() const;
-        BIGNUM* Data() const;
-        BigNum& operator=(const BigNum& other);
-        const std::string ToString() const;
-
-        std::vector<uint8_t> ToByteVector() const;
-    };
+    return GF2Vector();
 }
-
-#endif

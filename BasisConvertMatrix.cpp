@@ -22,34 +22,27 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_BIG_NUM_H__
-#define __ECC_BIG_NUM_H__
+#include "BasisConvertMatrix.h"
 
-#include <openssl/bn.h>
-#include <vector>
-#include <string>
+using namespace ecc;
 
-namespace ecc 
+#include <iostream>
+
+BasisConvertMatrix::BasisConvertMatrix(size_t M, size_t K, BigNum root) : prime(M + 1)
 {
-    class BigNum
-    {
-    private:
-        BIGNUM *num;
+    prime.SetBit({M, K, 0});
 
-    public:
-        BigNum();
-        BigNum(const BigNum& other);
-        BigNum(const std::vector<uint8_t>& data);
-        BigNum(BIGNUM* bn);
-        ~BigNum();
-        
-        bool Empty() const;
-        BIGNUM* Data() const;
-        BigNum& operator=(const BigNum& other);
-        const std::string ToString() const;
+    GF2Polynomial gamma(M + 1); // =root
 
-        std::vector<uint8_t> ToByteVector() const;
-    };
+    for (auto i = 0; i <= M; ++i) {
+        auto row = gamma.Value();
+        matrix.push_back(row);
+
+        gamma = (gamma * gamma) % prime;
+    }
 }
 
-#endif
+const std::vector<uint32_t>& BasisConvertMatrix::operator[](size_t idx) const
+{
+    return matrix[idx];
+}

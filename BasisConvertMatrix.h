@@ -22,33 +22,25 @@
  * SOFTWARE.
  */
 
-#ifndef __ECC_BIG_NUM_H__
-#define __ECC_BIG_NUM_H__
+#ifndef __ECC_BASIS_CONVERT_MATRIX_H__
+#define __ECC_BASIS_CONVERT_MATRIX_H__
 
-#include <openssl/bn.h>
-#include <vector>
-#include <string>
+#include "BigNum.h"
+#include "GF2Polynomial.h"
 
 namespace ecc 
 {
-    class BigNum
+    class BasisConvertMatrix
     {
     private:
-        BIGNUM *num;
+        GF2Polynomial prime;
+        std::vector<std::vector<uint32_t>> matrix;
 
     public:
-        BigNum();
-        BigNum(const BigNum& other);
-        BigNum(const std::vector<uint8_t>& data);
-        BigNum(BIGNUM* bn);
-        ~BigNum();
-        
-        bool Empty() const;
-        BIGNUM* Data() const;
-        BigNum& operator=(const BigNum& other);
-        const std::string ToString() const;
+        BasisConvertMatrix(size_t M, size_t K, BigNum root);
+        ~BasisConvertMatrix() = default;
 
-        std::vector<uint8_t> ToByteVector() const;
+        const std::vector<uint32_t>& operator[](size_t idx) const;
     };
 }
 
