@@ -44,7 +44,9 @@ namespace ecc
 
         size_t FieldSize() const;
         size_t FieldSizeInBytes() const;
-        EC_GROUP* Group();
+
+        EC_GROUP* RawPtr();
+        const EC_GROUP* RawPtr() const;
     };
 }
 

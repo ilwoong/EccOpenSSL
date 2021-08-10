@@ -53,7 +53,12 @@ size_t ECGroup::FieldSizeInBytes() const
     return (fieldSize + 7) >> 3;
 }
 
-EC_GROUP* ECGroup::Group()
+EC_GROUP* ECGroup::RawPtr()
+{
+    return group;
+}
+
+const EC_GROUP* ECGroup::RawPtr() const
 {
     return group;
 }

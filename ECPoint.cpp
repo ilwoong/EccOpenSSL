@@ -26,20 +26,20 @@
 
 using namespace ecc;
 
-ECPoint::ECPoint(const ECPoint& other) : ECPoint(other.group, EC_POINT_dup(other.point, other.group->Group()))
+ECPoint::ECPoint(const ECPoint& other) : ECPoint(other.group, EC_POINT_dup(other.point, other.group->RawPtr()))
 {}
 
-ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group) : ECPoint(group, EC_POINT_new(group->Group()))
+ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group) : ECPoint(group, EC_POINT_new(group->RawPtr()))
 {}
 
 ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, EC_POINT* point) : group(group), point(point), x(BigNum(BN_new())), y(BigNum(BN_new()))
 {
-    EC_POINT_get_affine_coordinates_GF2m(group->Group(), point, x.Data(), y.Data(), NULL);
+    EC_POINT_get_affine_coordinates_GF2m(group->RawPtr(), point, x.RawPtr(), y.RawPtr(), NULL);
 }
 
-ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, const BigNum& x, const BigNum& y) : group(group), point(EC_POINT_new(group->Group()))
+ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, const BigNum& x, const BigNum& y) : group(group), point(EC_POINT_new(group->RawPtr()))
 {
-    EC_POINT_set_affine_coordinates_GF2m(group->Group(), point, x.Data(), y.Data(), NULL);
+    EC_POINT_set_affine_coordinates_GF2m(group->RawPtr(), point, x.RawPtr(), y.RawPtr(), NULL);
 }
 
 ECPoint::~ECPoint()
@@ -58,7 +58,7 @@ ECPoint& ECPoint::operator=(const ECPoint& other)
         point = nullptr;
     }
 
-    point = EC_POINT_dup(point, group->Group());
+    point = EC_POINT_dup(point, group->RawPtr());
     x = other.x;
     y = other.y;
 
@@ -71,15 +71,15 @@ ECPoint ECPoint::operator+(const ECPoint& other) const
         throw std::invalid_argument("ECPoint add: two points are not on the same curve");
     }
 
-    EC_POINT* result = EC_POINT_new(group->Group());
-    EC_POINT_add(group->Group(), result, point, other.point, NULL);
+    EC_POINT* result = EC_POINT_new(group->RawPtr());
+    EC_POINT_add(group->RawPtr(), result, point, other.point, NULL);
     return ECPoint(group, result);
 }
 
 ECPoint ECPoint::operator*(const BigNum& num) const
 {
-    EC_POINT* result = EC_POINT_new(group->Group());
-    EC_POINT_mul(group->Group(), result, NULL, point, num.Data(), NULL);
+    EC_POINT* result = EC_POINT_new(group->RawPtr());
+    EC_POINT_mul(group->RawPtr(), result, NULL, point, num.RawPtr(), NULL);
     return ECPoint(group, result);
 }
 
@@ -88,7 +88,12 @@ std::shared_ptr<ECGroup> ECPoint::Group() const
     return group;
 }
 
-EC_POINT* ECPoint::Point() const
+EC_POINT* ECPoint::RawPtr()
+{
+    return point;
+}
+
+const EC_POINT* ECPoint::RawPtr() const
 {
     return point;
 }

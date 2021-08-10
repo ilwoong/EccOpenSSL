@@ -50,7 +50,7 @@ bool ECGroupGF2m::SetParameters(const BigNum& p, const BigNum& order, const BigN
     }
 
     /* Create the curve */
-    if(NULL == (group = EC_GROUP_new_curve_GF2m(p.Data(), a.Data(), b.Data(), ctx))) {
+    if(NULL == (group = EC_GROUP_new_curve_GF2m(p.RawPtr(), a.RawPtr(), b.RawPtr(), ctx))) {
         handleErrors("EC_GROUP_new_curve_GF2m");
         return false;
     }
@@ -61,13 +61,13 @@ bool ECGroupGF2m::SetParameters(const BigNum& p, const BigNum& order, const BigN
         return false;
     }
 
-    if(1 != EC_POINT_set_affine_coordinates_GF2m(group, generator, x.Data(), y.Data(), ctx)) {
+    if(1 != EC_POINT_set_affine_coordinates_GF2m(group, generator, x.RawPtr(), y.RawPtr(), ctx)) {
         handleErrors("EC_POINT_set_affine_coordinates_GF2m");
         return false;
     }
 
     /* Set the generator and the order */
-    if(1 != EC_GROUP_set_generator(group, generator, order.Data(), NULL)) {
+    if(1 != EC_GROUP_set_generator(group, generator, order.RawPtr(), NULL)) {
         handleErrors("EC_GROUP_set_generator");
         return false;
     }

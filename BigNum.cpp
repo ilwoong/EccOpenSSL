@@ -60,12 +60,12 @@ size_t BigNum::BitLength() const
     return BN_num_bits(num);
 }
 
-BIGNUM* BigNum::Data()
+BIGNUM* BigNum::RawPtr()
 {
     return num;
 }
 
-const BIGNUM* BigNum::Data() const
+const BIGNUM* BigNum::RawPtr() const
 {
     return num;
 }
@@ -92,28 +92,28 @@ BigNum& BigNum::operator=(const BigNum& other)
 BigNum BigNum::operator+(const BigNum& rhs) const
 {
     BigNum result;
-    BN_add(result.Data(), num, rhs.num);
+    BN_add(result.num, num, rhs.num);
     return result;
 }
 
 BigNum BigNum::operator-(const BigNum& rhs) const
 {
     BigNum result;
-    BN_sub(result.Data(), num, rhs.num);
+    BN_sub(result.num, num, rhs.num);
     return result;
 }
 
 BigNum BigNum::operator*(const BigNum& rhs) const
 {
     BigNum result;
-    BN_mul(result.Data(), num, rhs.num, nullptr);
+    BN_mul(result.num, num, rhs.num, nullptr);
     return result;
 }
 
 BigNum BigNum::operator%(const BigNum& rhs) const
 {
     BigNum result;
-    BN_mod(result.Data(), num, rhs.num, nullptr);
+    BN_mod(result.num, num, rhs.num, nullptr);
     return result;
 }
 

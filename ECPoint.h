@@ -54,7 +54,10 @@ namespace ecc
         ECPoint operator*(const BigNum& num) const;
 
         std::shared_ptr<ECGroup> Group() const;
-        EC_POINT* Point() const;
+
+        EC_POINT* RawPtr();
+        const EC_POINT* RawPtr() const;
+
         BigNum XCoord() const;
         BigNum YCoord() const;
 
