@@ -33,15 +33,16 @@ namespace ecc
     class GF2Matrix
     {
     private:
-        GF2Polynomial prime;
         std::vector<std::vector<uint32_t>> elements;
 
     public:
-        GF2Matrix(size_t M, size_t K, const BigNum& root);
+        GF2Matrix() = default;
         ~GF2Matrix() = default;
 
         size_t Rows() const;
         size_t Cols() const;
+
+        void AddRow(const std::vector<uint32_t>& row);
         const std::vector<uint32_t>& operator[](size_t idx) const;
     };
 

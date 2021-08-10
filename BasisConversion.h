@@ -33,10 +33,11 @@ namespace ecc
     class BasisConversion 
     {
     private:
+        GF2Polynomial prime;
         GF2Matrix matrix;
 
     public:
-        BasisConversion(size_t M, size_t K, const BigNum& root);
+        BasisConversion(const GF2Polynomial& prime, const BigNum& root);
         ~BasisConversion() = default;
 
         BigNum Convert(const BigNum& num) const;

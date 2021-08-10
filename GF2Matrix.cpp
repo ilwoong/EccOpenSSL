@@ -27,21 +27,6 @@
 
 using namespace ecc;
 
-GF2Matrix::GF2Matrix(size_t M, size_t K, const BigNum& root) : prime(M + 1)
-{
-    prime.SetBit({M, K, 0});
-
-    GF2Polynomial gamma(M + 1, root);
-
-    for (auto i = 0; i <= M; ++i) {
-        auto row = gamma.Value();
-        elements.push_back(row);
-        
-        gamma = gamma * gamma;
-        gamma = gamma % prime;
-    }
-}
-
 size_t GF2Matrix::Rows() const
 {
     return elements.size();
@@ -50,6 +35,11 @@ size_t GF2Matrix::Rows() const
 size_t GF2Matrix::Cols() const
 {
     return elements[0].size();
+}
+
+void GF2Matrix::AddRow(const std::vector<uint32_t>& row)
+{
+    elements.push_back(row);
 }
 
 const std::vector<uint32_t>& GF2Matrix::operator[](size_t idx) const

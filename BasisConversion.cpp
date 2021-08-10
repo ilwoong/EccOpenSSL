@@ -27,8 +27,18 @@
 
 using namespace ecc;
 
-BasisConversion::BasisConversion(size_t M, size_t K, const BigNum& root) : matrix(M, K, root)
-{}
+BasisConversion::BasisConversion(const GF2Polynomial& prime, const BigNum& root) : prime(prime)
+{
+    GF2Polynomial gamma(prime.Length(), root);
+
+    for (auto i = 0; i <= prime.Length(); ++i) {
+        auto row = gamma.Value();
+        matrix.AddRow(row);
+        
+        gamma = gamma * gamma;
+        gamma = gamma % prime;
+    }
+}
 
 BigNum BasisConversion::Convert(const BigNum& num) const
 {

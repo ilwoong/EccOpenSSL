@@ -163,13 +163,15 @@ static void testBasisConversion()
         0x50, 0x51, 
     };
 
-    auto conversion = BasisConversion(410, 120, nb2pb);
+    auto prime = GF2Polynomial(410);
+    prime.SetBit({409, 120, 0});
 
+    auto conversion = BasisConversion(prime, nb2pb);
     auto gamma = GF2Polynomial(410, nb2pb);
     auto num = gamma.ToBigNum();
     auto converted = conversion.Convert(num);
-
     std::cout << converted.ToString() << std::endl;
+    std::cout << GF2Polynomial(converted).ToHexIntString() << std::endl;
 }
 
 int main(int argc, const char** argv)
