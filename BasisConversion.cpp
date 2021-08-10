@@ -22,11 +22,29 @@
  * SOFTWARE.
  */
 
-#include "GF2Vector.h"
+#include "BasisConversion.h"
+#include "GF2Polynomial.h"
 
 using namespace ecc;
 
-GF2Vector GF2Vector::operator*(const BasisConvertMatrix& matrix) const
+BasisConversion::BasisConversion(size_t M, size_t K, const BigNum& root) : matrix(M, K, root)
+{}
+
+BigNum BasisConversion::Convert(const BigNum& num) const
 {
-    return GF2Vector();
+    if (num.BitLength() > matrix.Rows()) {
+        throw std::invalid_argument("length mismatch between BigNum and GF2Matrix");
+    }
+
+    auto poly = GF2Polynomial(matrix.Rows(), num);
+    auto converted = poly * matrix;
+    return converted.ToBigNum();
+}
+
+ECPoint BasisConversion::Convert(const ECPoint& point) const
+{
+    auto x = Convert(point.XCoord());
+    auto y = Convert(point.YCoord());
+
+    return ECPoint(point.Group(), x, y);
 }

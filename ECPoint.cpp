@@ -37,6 +37,11 @@ ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, EC_POINT* point) : group
     EC_POINT_get_affine_coordinates_GF2m(group->Group(), point, x.Data(), y.Data(), NULL);
 }
 
+ECPoint::ECPoint(const std::shared_ptr<ECGroup>& group, const BigNum& x, const BigNum& y) : group(group), point(EC_POINT_new(group->Group()))
+{
+    EC_POINT_set_affine_coordinates_GF2m(group->Group(), point, x.Data(), y.Data(), NULL);
+}
+
 ECPoint::~ECPoint()
 {
     if (point != nullptr) {

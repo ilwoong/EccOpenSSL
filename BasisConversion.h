@@ -22,27 +22,26 @@
  * SOFTWARE.
  */
 
-#include "BasisConvertMatrix.h"
+#ifndef __ECC_BASIS_CONVERSION_H__
+#define __ECC_BASIS_CONVERSION_H__
 
-using namespace ecc;
+#include "GF2Matrix.h"
+#include "ECPoint.h"
 
-#include <iostream>
-
-BasisConvertMatrix::BasisConvertMatrix(size_t M, size_t K, BigNum root) : prime(M + 1)
+namespace ecc 
 {
-    prime.SetBit({M, K, 0});
+    class BasisConversion 
+    {
+    private:
+        GF2Matrix matrix;
 
-    GF2Polynomial gamma(M + 1); // =root
+    public:
+        BasisConversion(size_t M, size_t K, const BigNum& root);
+        ~BasisConversion() = default;
 
-    for (auto i = 0; i <= M; ++i) {
-        auto row = gamma.Value();
-        matrix.push_back(row);
-
-        gamma = (gamma * gamma) % prime;
-    }
+        BigNum Convert(const BigNum& num) const;
+        ECPoint Convert(const ECPoint& point) const;
+    };
 }
 
-const std::vector<uint32_t>& BasisConvertMatrix::operator[](size_t idx) const
-{
-    return matrix[idx];
-}
+#endif

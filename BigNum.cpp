@@ -55,6 +55,11 @@ bool BigNum::Empty() const
     return num == nullptr;
 }
 
+size_t BigNum::BitLength() const
+{
+    return BN_num_bits(num);
+}
+
 BIGNUM* BigNum::Data() const
 {
     return num;
@@ -76,9 +81,7 @@ BigNum& BigNum::operator=(const BigNum& other)
 
 const std::string BigNum::ToString() const
 {
-    auto len = BN_num_bytes(num);
-    std::vector<uint8_t> vec(len);
-    BN_bn2bin(num, vec.data());
+    auto vec = ToByteVector();
     
     std::ostringstream oss;
     
@@ -93,9 +96,9 @@ const std::string BigNum::ToString() const
 
 std::vector<uint8_t> BigNum::ToByteVector() const
 {
-    auto result = std::vector<uint8_t>();
-
-    throw std::runtime_error("not implemented yet");
+    auto len = BN_num_bytes(num);
+    std::vector<uint8_t> result(len);
+    BN_bn2bin(num, result.data());
 
     return result;
 }

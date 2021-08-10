@@ -9,16 +9,18 @@ SRC = \
 	ECPoint.cpp \
 	BigNum.cpp \
 	GF2Polynomial.cpp \
-	GF2Vector.cpp \
-	BasisConvertMatrix.cpp \
+	GF2Matrix.cpp \
+	BasisConversion.cpp \
+
+.PHONY: all clean
 
 all : libecc test
 
 libecc : $(SRC)
-	$(CC) $^ $(CPPFLAGS) -o $@.so --shared -fPIC -lcrypto 
+	$(CC) $(CPPFLAGS) $^ -o $@.so -shared -fPIC -lcrypto 
 
 test : test.cpp
-	$(CC) $^ $(CPPFLAGS) -o $@ -L. -lecc
+	$(CC) $(CPPFLAGS) $^ -o $@ -L. -lecc
 
 clean:
 	rm -rf libecc.so test

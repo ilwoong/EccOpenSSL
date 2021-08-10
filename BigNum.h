@@ -44,6 +44,7 @@ namespace ecc
         ~BigNum();
         
         bool Empty() const;
+        size_t BitLength() const;
         BIGNUM* Data() const;
         BigNum& operator=(const BigNum& other);
         const std::string ToString() const;

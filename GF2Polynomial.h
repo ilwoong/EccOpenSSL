@@ -42,6 +42,7 @@ namespace ecc
         GF2Polynomial(size_t length);
         GF2Polynomial(size_t length, const std::vector<uint32_t>& data);
         GF2Polynomial(size_t length, const BigNum& num);
+        GF2Polynomial(const BigNum& num);
         GF2Polynomial(const GF2Polynomial& other);
         ~GF2Polynomial();
 
@@ -61,6 +62,9 @@ namespace ecc
         GF2Polynomial ShiftBlocksLeft() const;
         GF2Polynomial ShiftBlocksLeft(size_t numBlocks) const;
         
+        uint32_t& operator[](size_t pos);
+        const uint32_t& operator[](size_t pos) const;
+
         GF2Polynomial& operator=(const GF2Polynomial& other);
         GF2Polynomial& operator^=(const GF2Polynomial& other);
 
@@ -69,6 +73,10 @@ namespace ecc
         GF2Polynomial operator-(const GF2Polynomial& other) const;
         GF2Polynomial operator*(const GF2Polynomial& other) const;
         GF2Polynomial operator%(const GF2Polynomial& other) const;
+
+        std::string ToBitString() const;
+        std::string ToHexIntString() const;
+        BigNum ToBigNum() const;
 
     private:
         void ZeroUnusedBits();
