@@ -1,18 +1,18 @@
-/** 
+/**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Ilwoong Jeong (https://github.com/ilwoong)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,14 +29,14 @@
 #include <vector>
 #include <cstdint>
 
-namespace ecc 
+namespace ecc
 {
-    class GF2Polynomial 
+    class GF2Polynomial
     {
     public:
         size_t length;
         std::vector<uint32_t> value;
-    
+
     public:
         GF2Polynomial();
         GF2Polynomial(size_t length);
@@ -54,13 +54,13 @@ namespace ecc
         uint8_t GetBit(size_t idx) const;
         void SetBit(size_t idx);
         void SetBit(const std::initializer_list<size_t>& idxList);
-        
+
         GF2Polynomial Expand(size_t length) const;
         GF2Polynomial Reduce() const;
-                
+
         GF2Polynomial ShiftLeft(size_t numBits) const;
         GF2Polynomial ShiftBlocksLeft(size_t numBlocks) const;
-        
+
         uint32_t& operator[](size_t pos);
         const uint32_t& operator[](size_t pos) const;
 
