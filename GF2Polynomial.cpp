@@ -103,6 +103,11 @@ size_t GF2Polynomial::Length() const
     return length;
 }
 
+size_t GF2Polynomial::BlockLength() const
+{
+    return value.size();
+}
+
 std::vector<uint32_t> GF2Polynomial::Value() const
 {
     return value;
@@ -155,7 +160,7 @@ GF2Polynomial GF2Polynomial::Expand(size_t length) const
 
 GF2Polynomial GF2Polynomial::Reduce() const
 {
-    int64_t blkIdx = value.size() - 1;
+    int64_t blkIdx = BlockLength() - 1;
     while ((value[blkIdx] == 0) && (blkIdx > 0)) {
         blkIdx -= 1;
     }
@@ -170,19 +175,6 @@ GF2Polynomial GF2Polynomial::Reduce() const
     return GF2Polynomial((blkIdx << 5) + bitIdx, value);
 }
 
-GF2Polynomial GF2Polynomial::ShiftLeft() const
-{
-    auto result = GF2Polynomial(length + 1, value);
-
-    for (auto i = result.value.size() - 1; i >= 1; --i) {
-        result.value[i] <<= 1;
-        result.value[i] |= value[i - 1] >> 31;
-    }
-    result.value[0] <<= 1;
-
-    return result;
-}
-
 GF2Polynomial GF2Polynomial::ShiftLeft(size_t numBits) const
 {
     auto result = GF2Polynomial(*this);
@@ -193,43 +185,32 @@ GF2Polynomial GF2Polynomial::ShiftLeft(size_t numBits) const
 
     result = GF2Polynomial(length + numBits, result.value);
 
-    auto remaining = numBits & 0x1f;
+    auto shiftBits = numBits & 0x1f;
 
-    if (remaining > 0) {
-        for (auto i = result.value.size() - 1; i >= 1; --i) {
-            result.value[i] <<= remaining;
-            result.value[i] |= result.value[i - 1] >> (32 - remaining);
+    if (shiftBits > 0) {
+        for (auto i = result.BlockLength() - 1; i >= 1; --i) {
+            result.value[i] <<= shiftBits;
+            result.value[i] |= result.value[i - 1] >> (32 - shiftBits);
         }
-        result.value[0] <<= remaining;
+        result.value[0] <<= shiftBits;
     }
-
-    return result;
-}
-
-GF2Polynomial GF2Polynomial::ShiftBlocksLeft() const
-{
-    auto result = GF2Polynomial(*this);
-
-    result.length += 32;
-    result.value.insert(result.value.begin(), 0);
 
     return result;
 }
 
 GF2Polynomial GF2Polynomial::ShiftBlocksLeft(size_t numBlocks) const
 {
-    auto result = GF2Polynomial(*this);
-    std::vector<uint32_t> zeros(numBlocks);
+    auto zeros = std::vector<uint32_t>(numBlocks);
+    
+    auto result = std::vector<uint32_t>(value);
+    result.insert(result.begin(), zeros.begin(), zeros.end());
 
-    result.length += numBlocks << 5;
-    result.value.insert(result.value.begin(), zeros.begin(), zeros.end());
-
-    return result;
+    return GF2Polynomial(length + (numBlocks << 5), result);
 }
 
 uint32_t& GF2Polynomial::operator[](size_t pos)
 {
-    if (pos >= value.size()) {
+    if (pos >= BlockLength()) {
         std::out_of_range("out of range");
     }
 
@@ -238,26 +219,26 @@ uint32_t& GF2Polynomial::operator[](size_t pos)
 
 const uint32_t& GF2Polynomial::operator[](size_t pos) const
 {
-    if (pos >= value.size()) {
+    if (pos >= BlockLength()) {
         std::out_of_range("out of range");
     }
 
     return value[pos];
 }
 
-GF2Polynomial& GF2Polynomial::operator=(const GF2Polynomial& other)
+GF2Polynomial& GF2Polynomial::operator=(const GF2Polynomial& rhs)
 {
-    length = other.length;
-    value = other.value;
+    length = rhs.length;
+    value = rhs.value;
     return *this;
 }
 
-GF2Polynomial& GF2Polynomial::operator^=(const GF2Polynomial& other)
+GF2Polynomial& GF2Polynomial::operator^=(const GF2Polynomial& rhs)
 {
-    auto min = (value.size() < other.value.size()) ? value.size() : other.value.size();
+    auto min = (BlockLength() < rhs.BlockLength()) ? BlockLength() : rhs.BlockLength();
     
     for (auto i = 0; i < min; ++i) {
-        value[i] ^= other.value[i];
+        value[i] ^= rhs.value[i];
     }
 
     ZeroUnusedBits();
@@ -265,11 +246,10 @@ GF2Polynomial& GF2Polynomial::operator^=(const GF2Polynomial& other)
     return *this;
 }
 
-GF2Polynomial GF2Polynomial::operator^(const GF2Polynomial& other) const
+GF2Polynomial GF2Polynomial::operator^(const GF2Polynomial& rhs) const
 {
-    GF2Polynomial lhs = GF2Polynomial(*this);
-    GF2Polynomial rhs = other;
-    auto min = lhs.value.size() < rhs.value.size() ? lhs.value.size() : rhs.value.size();
+    auto lhs = GF2Polynomial(*this);
+    auto min = lhs.BlockLength() < rhs.BlockLength() ? lhs.BlockLength() : rhs.BlockLength();
 
     for (auto i = 0; i < min; ++i) {
         lhs.value[i] ^= rhs.value[i];
@@ -280,38 +260,38 @@ GF2Polynomial GF2Polynomial::operator^(const GF2Polynomial& other) const
     return lhs;
 }
 
-GF2Polynomial GF2Polynomial::operator+(const GF2Polynomial& other) const
+GF2Polynomial GF2Polynomial::operator+(const GF2Polynomial& rhs) const
 {
-    return *this ^ other;
+    return *this ^ rhs;
 }
 
-GF2Polynomial GF2Polynomial::operator-(const GF2Polynomial& other) const
+GF2Polynomial GF2Polynomial::operator-(const GF2Polynomial& rhs) const
 {
     auto lhs = GF2Polynomial(*this);
-    lhs.Expand(other.length);    
-    return lhs ^ other;
+    lhs.Expand(rhs.length);    
+    return lhs ^ rhs;
 }
 
 // classic multiplication, if speedup needed, consider Karatsuba algorithm 
-GF2Polynomial GF2Polynomial::operator*(const GF2Polynomial& other) const
+GF2Polynomial GF2Polynomial::operator*(const GF2Polynomial& rhs) const
 {
-    auto max = length > other.length ? length : other.length;
+    auto max = length > rhs.length ? length : rhs.length;
     auto result = GF2Polynomial(max << 1);
     auto m = std::array<GF2Polynomial, 32>();
 
     m[0] = GF2Polynomial(*this);
     for (auto i = 1; i < 32; ++i) {
-        m[i] = m[i - 1].ShiftLeft();
+        m[i] = m[i - 1].ShiftLeft(1);
     }
     
-    for (auto i = 0; i < other.value.size(); ++i) {
+    for (auto i = 0; i < rhs.BlockLength(); ++i) {
         for (auto j = 0; j < 32; ++j) {
-            if ((other.value[i] & BITMASK[j]) != 0) {                
+            if ((rhs.value[i] & BITMASK[j]) != 0) {                
                 result ^= m[j];
             }
         }
         for (auto j = 0; j < 32; ++j) {
-            m[j] = m[j].ShiftBlocksLeft();
+            m[j] = m[j].ShiftBlocksLeft(1);
         }        
     }
 
@@ -391,6 +371,6 @@ BigNum GF2Polynomial::ToBigNum() const
 void GF2Polynomial::ZeroUnusedBits()
 {
     if ((length & 0x1f) != 0) {
-        value[value.size() - 1] &= REVERSE_RIGHT_MASK[length & 0x1f];
+        value[BlockLength() - 1] &= REVERSE_RIGHT_MASK[length & 0x1f];
     }
 }

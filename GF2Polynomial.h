@@ -47,6 +47,7 @@ namespace ecc
         ~GF2Polynomial();
 
         size_t Length() const;
+        size_t BlockLength() const;
         std::vector<uint32_t> Value() const;
 
         bool IsZero() const;
@@ -56,22 +57,20 @@ namespace ecc
         
         GF2Polynomial Expand(size_t length) const;
         GF2Polynomial Reduce() const;
-        
-        GF2Polynomial ShiftLeft() const;
+                
         GF2Polynomial ShiftLeft(size_t numBits) const;
-        GF2Polynomial ShiftBlocksLeft() const;
         GF2Polynomial ShiftBlocksLeft(size_t numBlocks) const;
         
         uint32_t& operator[](size_t pos);
         const uint32_t& operator[](size_t pos) const;
 
-        GF2Polynomial& operator=(const GF2Polynomial& other);
-        GF2Polynomial& operator^=(const GF2Polynomial& other);
+        GF2Polynomial& operator=(const GF2Polynomial& rhs);
+        GF2Polynomial& operator^=(const GF2Polynomial& rhs);
 
-        GF2Polynomial operator^(const GF2Polynomial& other) const;
-        GF2Polynomial operator+(const GF2Polynomial& other) const;
-        GF2Polynomial operator-(const GF2Polynomial& other) const;
-        GF2Polynomial operator*(const GF2Polynomial& other) const;
+        GF2Polynomial operator^(const GF2Polynomial& rhs) const;
+        GF2Polynomial operator+(const GF2Polynomial& rhs) const;
+        GF2Polynomial operator-(const GF2Polynomial& rhs) const;
+        GF2Polynomial operator*(const GF2Polynomial& rhs) const;
         GF2Polynomial operator%(const GF2Polynomial& other) const;
 
         std::string ToBitString() const;
