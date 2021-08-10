@@ -32,7 +32,9 @@ EllipticCurve::EllipticCurve() : EllipticCurve(nullptr)
 
 EllipticCurve::EllipticCurve(const std::shared_ptr<ECGroup>& group) : group(group)
 {
+    BigNum a, b;
     ctx = BN_CTX_new();
+    EC_GROUP_get_curve_GF2m(group->Group(), prime.Data(), a.Data(), b.Data(), nullptr);
 }
 
 EllipticCurve::~EllipticCurve()
@@ -54,16 +56,16 @@ BigNum EllipticCurve::RandomScalar()
 
 BigNum EllipticCurve::Normalize(const BigNum& num) const
 {
-    return num;
+    return num % prime;
 }
 
 ECPoint EllipticCurve::RandomPoint()
 {
     auto k = RandomScalar();
-    return RandomPoint(k);
+    return Multiply(k);
 }
 
-ECPoint EllipticCurve::RandomPoint(const BigNum& k)
+ECPoint EllipticCurve::Multiply(const BigNum& k)
 {
     EC_POINT* point = EC_POINT_new(group->Group());
 
@@ -109,6 +111,11 @@ std::vector<uint8_t> EllipticCurve::Point2VecCompressed(const ECPoint& point)
     EC_POINT_point2oct(group->Group(), point.Point(), point_conversion_form_t::POINT_CONVERSION_COMPRESSED, vec.data(), len, ctx);
 
     return vec;
+}
+
+BigNum EllipticCurve::Add(const BigNum& lhs, const BigNum& rhs) const
+{
+    return (lhs + rhs) % prime;
 }
 
 bool EllipticCurve::IsValidPoint(const ECPoint& point) const

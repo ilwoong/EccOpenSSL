@@ -45,7 +45,8 @@ namespace ecc
 
         bool Empty() const;
         size_t BitLength() const;
-        BIGNUM* Data() const;
+        BIGNUM* Data();
+        const BIGNUM* Data() const;
 
         bool operator==(const BigNum& other) const;
         BigNum& operator=(const BigNum& other);

@@ -39,6 +39,7 @@ namespace ecc
     public:
         std::shared_ptr<ECGroup> group;
         BN_CTX *ctx;
+        BigNum prime;
 
     public:
         EllipticCurve();
@@ -49,12 +50,14 @@ namespace ecc
         BigNum Normalize(const BigNum& value) const;
 
         ECPoint RandomPoint();
-        ECPoint RandomPoint(const BigNum& k);
+        ECPoint Multiply(const BigNum& k);
 
         ECPoint Point(const std::vector<uint8_t>& rawData);
         ECPoint Point(const std::vector<uint8_t>& x, uint8_t ybit);
         std::vector<uint8_t> Point2Vec(const ECPoint& point);
         std::vector<uint8_t> Point2VecCompressed(const ECPoint& point);
+
+        BigNum Add(const BigNum& lhs, const BigNum& rhs) const;
 
         bool IsValidPoint(const ECPoint& point) const;
     };
