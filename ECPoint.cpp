@@ -53,6 +53,10 @@ ECPoint::~ECPoint()
 
 ECPoint& ECPoint::operator=(const ECPoint& other)
 {
+    if (this == &other) {
+        return *this;
+    }
+
     group = other.group;
     if (point != nullptr) {
         EC_POINT_free(point);

@@ -77,12 +77,12 @@ bool BigNum::operator==(const BigNum& other) const
 
 BigNum& BigNum::operator=(const BigNum& other)
 {
-    if (num != nullptr) {
-        BN_free(num);
-        num = nullptr;
+    if (this == &other) {
+        return *this;
     }
 
     if (other.num != nullptr) {
+        BN_free(num);
         num = BN_dup(other.num);
     }
 
