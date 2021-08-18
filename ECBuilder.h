@@ -43,6 +43,7 @@ namespace ecc
         BigNum b;
         BigNum x;
         BigNum y;
+        BigNum root;
 
     public:
         ECBuilder() = default;
@@ -56,6 +57,7 @@ namespace ecc
         ECBuilder& B(const BigNum& b);
         ECBuilder& X(const BigNum& x);
         ECBuilder& Y(const BigNum& y);
+        ECBuilder& Root(const BigNum& root);
 
         EllipticCurve BuildGFp() const;
         EllipticCurve BuildGF2m() const;

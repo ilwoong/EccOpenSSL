@@ -126,19 +126,23 @@ bool GF2Polynomial::IsZero() const
 
 uint8_t GF2Polynomial::GetBit(size_t idx) const
 {
+    if (idx >= length) {
+        return 0;
+    }
+
     auto byteIdx = (idx >> 5);
-    auto bitIdx = idx % 32;
+    auto bitIdx = idx & 0x1f;
     return (value[byteIdx] >> bitIdx) & 0x1;
 }
 
 void GF2Polynomial::SetBit(size_t idx)
 {
     if (length <= idx) {
-        throw std::out_of_range("idx is out of range");
+        throw std::out_of_range("GF2Polynomial::SetBit idx is out of range " + std::to_string(idx));
     }
 
     auto byteIdx = (idx >> 5);
-    auto bitIdx = idx % 32;
+    auto bitIdx = idx & 0x1f;
     value[byteIdx] |= BITMASK[bitIdx];
 }
 
@@ -321,6 +325,18 @@ GF2Polynomial GF2Polynomial::operator%(const GF2Polynomial& other) const
     }
 
     return lhs;
+}
+
+GF2Polynomial GF2Polynomial::ReverseBits() const
+{
+    auto result = GF2Polynomial(length);
+    for (auto i = 0; i < length; ++i) {
+        if (GetBit(length - i - 1) == 0x1) {
+            result.SetBit(i);
+        }
+    }
+
+    return result;
 }
 
 std::string GF2Polynomial::ToBitString() const

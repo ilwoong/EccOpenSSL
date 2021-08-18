@@ -39,11 +39,22 @@ namespace ecc
         GF2Matrix() = default;
         ~GF2Matrix() = default;
 
+        GF2Matrix(const GF2Matrix& other);
+
         size_t Rows() const;
         size_t Cols() const;
 
         void AddRow(const std::vector<uint32_t>& row);
         const std::vector<uint32_t>& operator[](size_t idx) const;
+
+        GF2Matrix Invert() const;
+
+        const std::string ToString() const;
+
+    private:
+        std::vector<std::vector<uint32_t>> UnitElements() const;
+        void SwapRows(std::vector<std::vector<uint32_t>>& elements, size_t from, size_t to) const;
+        void AddToRow(std::vector<uint32_t>& dst, const std::vector<uint32_t>& src, size_t startIdx) const;
     };
 
     GF2Polynomial operator*(const GF2Polynomial& lhs, const GF2Matrix& rhs);

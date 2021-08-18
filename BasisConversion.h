@@ -27,6 +27,7 @@
 
 #include "GF2Matrix.h"
 #include "ECPoint.h"
+#include <utility>
 
 namespace ecc
 {
@@ -35,13 +36,18 @@ namespace ecc
     private:
         GF2Polynomial prime;
         GF2Matrix matrix;
+        GF2Matrix invMatrix;
 
     public:
-        BasisConversion(const GF2Polynomial& prime, const BigNum& root);
+        BasisConversion() = default;
         ~BasisConversion() = default;
 
-        BigNum Convert(const BigNum& num) const;
-        ECPoint Convert(const ECPoint& point) const;
+        BasisConversion(const GF2Polynomial& prime, const BigNum& root);
+
+        BasisConversion& operator=(const BasisConversion& other);
+
+        BigNum ConvertPB(const BigNum& num) const;
+        BigNum ConvertNB(const BigNum& num) const;
     };
 }
 

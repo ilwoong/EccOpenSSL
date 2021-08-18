@@ -24,12 +24,17 @@
 
 #include "ECGroupGFp.h"
 #include "BigNum.h"
+#include <stdexcept>
 #include <vector>
+#include <openssl/err.h>
 
 using namespace ecc;
 
 static void handleErrors(const std::string& msg)
-{}
+{
+    auto err = ERR_get_error();
+    throw std::runtime_error(msg + ": " + ERR_reason_error_string(err));
+}
 
 // curve_GF2m : polynomial basis
 ECGroupGFp::ECGroupGFp(size_t fieldSize) : ECGroup(fieldSize)

@@ -29,7 +29,7 @@
 
 namespace ecc
 {
-    // ECGroupGF2m : polynomial basis
+    // ECGroupGF2m : polynomial basis with Lamba projective coordinate
     class ECGroupGF2m : public ECGroup {
     public:
         ECGroupGF2m(size_t fieldSize);

@@ -91,29 +91,37 @@ BigNum& BigNum::operator=(const BigNum& other)
 
 BigNum BigNum::operator+(const BigNum& rhs) const
 {
-    BigNum result;
+    BigNum result(BN_new());
     BN_add(result.num, num, rhs.num);
     return result;
 }
 
 BigNum BigNum::operator-(const BigNum& rhs) const
 {
-    BigNum result;
+    BigNum result(BN_new());
     BN_sub(result.num, num, rhs.num);
     return result;
 }
 
 BigNum BigNum::operator*(const BigNum& rhs) const
 {
-    BigNum result;
-    BN_mul(result.num, num, rhs.num, nullptr);
+    auto ctx = BN_CTX_new();
+
+    BigNum result(BN_new());
+    BN_mul(result.num, num, rhs.num, ctx);
+
+    BN_CTX_free(ctx);
     return result;
 }
 
 BigNum BigNum::operator%(const BigNum& rhs) const
 {
-    BigNum result;
-    BN_mod(result.num, num, rhs.num, nullptr);
+    auto ctx = BN_CTX_new();
+
+    BigNum result(BN_new());
+    BN_nnmod(result.num, num, rhs.num, ctx);
+
+    BN_CTX_free(ctx);
     return result;
 }
 

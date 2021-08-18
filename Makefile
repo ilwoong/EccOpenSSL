@@ -1,5 +1,5 @@
 CC = g++
-CPPFLAGS = -std=c++11
+CPPFLAGS = -std=c++11 -O2
 SRC = \
 	EllipticCurve.cpp \
 	ECBuilder.cpp \
@@ -17,7 +17,7 @@ SRC = \
 all : libecc test
 
 libecc : $(SRC)
-	$(CC) $(CPPFLAGS) $^ -o $@.so -shared -fPIC -lcrypto 
+	$(CC) $(CPPFLAGS) $^ -o $@.so -shared -fPIC -lcrypto
 
 test : test.cpp
 	$(CC) $(CPPFLAGS) $^ -o $@ -L. -lecc

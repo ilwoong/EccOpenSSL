@@ -29,32 +29,51 @@ using namespace ecc;
 
 BasisConversion::BasisConversion(const GF2Polynomial& prime, const BigNum& root) : prime(prime)
 {
-    GF2Polynomial gamma(prime.Length(), root);
+    auto degree = prime.Length() - 1;
+    GF2Polynomial gamma(degree, root);
 
-    for (auto i = 0; i <= prime.Length(); ++i) {
+    for (auto i = 0; i < degree; ++i) {
         auto row = gamma.Value();
         matrix.AddRow(row);
 
         gamma = gamma * gamma;
         gamma = gamma % prime;
+        gamma = gamma.Expand(degree);
     }
+
+    invMatrix = matrix.Invert();
 }
 
-BigNum BasisConversion::Convert(const BigNum& num) const
+BasisConversion& BasisConversion::operator=(const BasisConversion& other) {
+    prime = other.prime;
+    matrix = other.matrix;
+    invMatrix = other.matrix;
+
+    return *this;
+}
+
+BigNum BasisConversion::ConvertPB(const BigNum& num) const
 {
     if (num.BitLength() > matrix.Rows()) {
         throw std::invalid_argument("length mismatch between BigNum and GF2Matrix");
     }
 
     auto poly = GF2Polynomial(matrix.Rows(), num);
+    poly = poly.ReverseBits();
     auto converted = poly * matrix;
+
     return converted.ToBigNum();
 }
 
-ECPoint BasisConversion::Convert(const ECPoint& point) const
+BigNum BasisConversion::ConvertNB(const BigNum& num) const
 {
-    auto x = Convert(point.XCoord());
-    auto y = Convert(point.YCoord());
+    if (num.BitLength() > matrix.Rows()) {
+        throw std::invalid_argument("length mismatch between BigNum and GF2Matrix");
+    }
 
-    return ECPoint(point.Group(), x, y);
+    auto poly = GF2Polynomial(matrix.Rows(), num);
+    auto converted = poly * invMatrix;
+    converted = converted.ReverseBits();
+
+    return converted.ToBigNum();
 }

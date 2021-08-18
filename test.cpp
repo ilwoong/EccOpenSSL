@@ -1,18 +1,18 @@
-/** 
+/**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Ilwoong Jeong (https://github.com/ilwoong)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,7 @@ static void print(const std::string& title, bool result) {
     std::cout << std::boolalpha << result << std::noboolalpha << std::endl;
 }
 
-static void print(const std::vector<uint8_t>& vec) 
+static void print(const std::vector<uint8_t>& vec)
 {
     std::cout << "(" << vec.size() << ") ";
     std::cout << std::hex;
@@ -61,6 +61,7 @@ static EllipticCurve SecgK409Curve()
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
     };
+
     std::vector<uint8_t> b = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -78,13 +79,15 @@ static EllipticCurve SecgK409Curve()
         0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x01,
     };
+
     std::vector<uint8_t> order = {
         0x00, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFE, 0x5F, 0x83, 0xB2, 0xD4, 0xEA, 0x20, 0x40, 0x0E, 0xC4,
         0x55, 0x7D, 0x5E, 0xD3, 0xE3, 0xE7, 0xCA, 0x5B, 0x4B, 0x5C, 0x83, 0xB8,
-        0xE0, 0x1E, 0x5F, 0xCF 
+        0xE0, 0x1E, 0x5F, 0xCF
     };
+
     std::vector<uint8_t> x = {
         0x00, 0x60, 0xF0, 0x5F, 0x65, 0x8F, 0x49, 0xC1, 0xAD, 0x3A, 0xB1, 0x89,
         0x0F, 0x71, 0x84, 0x21, 0x0E, 0xFD, 0x09, 0x87, 0xE3, 0x07, 0xC8, 0x4C,
@@ -92,7 +95,17 @@ static EllipticCurve SecgK409Curve()
         0xB5, 0xAA, 0xAA, 0x62, 0xEE, 0x22, 0x2E, 0xB1, 0xB3, 0x55, 0x40, 0xCF,
         0xE9, 0x02, 0x37, 0x46,
     };
+
     std::vector<uint8_t> y ={
+        0x01, 0xE3, 0x69, 0x05, 0x0B, 0x7C, 0x4E, 0x42, 0xAC, 0xBA, 0x1D, 0xAC,
+        0xBF, 0x04, 0x29, 0x9C, 0x34, 0x60, 0x78, 0x2F, 0x91, 0x8E, 0xA4, 0x27,
+        0xE6, 0x32, 0x51, 0x65, 0xE9, 0xEA, 0x10, 0xE3, 0xDA, 0x5F, 0x6C, 0x42,
+        0xE9, 0xC5, 0x52, 0x15, 0xAA, 0x9C, 0xA2, 0x7A, 0x58, 0x63, 0xEC, 0x48,
+        0xD8, 0xE0, 0x28, 0x6B,
+    };
+
+    // not a real root. should be corrected
+    std::vector<uint8_t> root ={
         0x01, 0xE3, 0x69, 0x05, 0x0B, 0x7C, 0x4E, 0x42, 0xAC, 0xBA, 0x1D, 0xAC,
         0xBF, 0x04, 0x29, 0x9C, 0x34, 0x60, 0x78, 0x2F, 0x91, 0x8E, 0xA4, 0x27,
         0xE6, 0x32, 0x51, 0x65, 0xE9, 0xEA, 0x10, 0xE3, 0xDA, 0x5F, 0x6C, 0x42,
@@ -102,7 +115,7 @@ static EllipticCurve SecgK409Curve()
 
     auto builder = ECBuilder();
 
-    builder.FieldSize(409).Irreducible(p).Order(order).A(a).B(b).X(x).Y(y);
+    builder.FieldSize(409).Irreducible(p).Order(order).A(a).B(b).X(x).Y(y).Root(root);
 
     return builder.BuildGF2m();
 }
@@ -110,7 +123,7 @@ static EllipticCurve SecgK409Curve()
 static void testAddition(EllipticCurve& curve)
 {
     auto p1 = curve.RandomPoint();
-    auto p2 = curve.RandomPoint();    
+    auto p2 = curve.RandomPoint();
     auto p3 = p1 + p2;
 
     print("Point Addition", curve.IsValidPoint(p3));
@@ -123,9 +136,9 @@ static void testAddition(EllipticCurve& curve)
 static void testMultiplication(EllipticCurve& curve)
 {
     auto k = curve.RandomScalar();
-    auto p1 = curve.RandomPoint();    
+    auto p1 = curve.RandomPoint();
     auto p2 = k * p1;
-    
+
     print("Point Multiplication", curve.IsValidPoint(p2));
     print("p1", p1);
     print("p2", p2);
@@ -134,7 +147,7 @@ static void testMultiplication(EllipticCurve& curve)
 
 static void testCompression(EllipticCurve& curve)
 {
-    auto p1 = curve.RandomPoint();    
+    auto p1 = curve.RandomPoint();
     auto buf = curve.Point2VecCompressed(p1);
     std::vector<uint8_t> x;
     x.assign(buf.begin() + 1, buf.end());
@@ -152,26 +165,22 @@ static void testCompression(EllipticCurve& curve)
     std::cout << std::endl;
 }
 
-static void testBasisConversion()
+static void testBasisConversion(EllipticCurve& curve)
 {
-    std::vector<uint8_t> nb2pb = {
+    std::vector<uint8_t> data = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
         0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
         0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-        0x50, 0x51, 
+        0x50, 0x51,
     };
 
-    auto prime = GF2Polynomial(410);
-    prime.SetBit({409, 120, 0});
+    auto pb = curve.ConvertPB(data);
+    auto nb = curve.ConvertNB(pb);
 
-    auto conversion = BasisConversion(prime, nb2pb);
-    auto gamma = GF2Polynomial(410, nb2pb);
-    auto num = gamma.ToBigNum();
-    auto converted = conversion.Convert(num);
-    std::cout << converted.ToString() << std::endl;
-    std::cout << GF2Polynomial(converted).ToHexIntString() << std::endl;
+    std::cout << "polynomial basis: " << pb.ToString() << std::endl;
+    std::cout << "    normal basis: " << nb.ToString() << std::endl;
 }
 
 int main(int argc, const char** argv)
@@ -181,7 +190,7 @@ int main(int argc, const char** argv)
     testAddition(curve);
     testMultiplication(curve);
     testCompression(curve);
-    testBasisConversion();
-    
+    testBasisConversion(curve);
+
     return 0;
 }

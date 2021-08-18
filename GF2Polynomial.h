@@ -73,6 +73,8 @@ namespace ecc
         GF2Polynomial operator*(const GF2Polynomial& rhs) const;
         GF2Polynomial operator%(const GF2Polynomial& other) const;
 
+        GF2Polynomial ReverseBits() const;
+
         std::string ToBitString() const;
         std::string ToHexIntString() const;
         BigNum ToBigNum() const;

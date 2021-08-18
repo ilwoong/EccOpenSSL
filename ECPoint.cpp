@@ -23,6 +23,7 @@
  */
 
 #include "ECPoint.h"
+#include <openssl/err.h>
 
 using namespace ecc;
 
@@ -58,7 +59,7 @@ ECPoint& ECPoint::operator=(const ECPoint& other)
         point = nullptr;
     }
 
-    point = EC_POINT_dup(point, group->RawPtr());
+    point = EC_POINT_dup(other.point, group->RawPtr());
     x = other.x;
     y = other.y;
 
@@ -79,7 +80,13 @@ ECPoint ECPoint::operator+(const ECPoint& other) const
 ECPoint ECPoint::operator*(const BigNum& num) const
 {
     EC_POINT* result = EC_POINT_new(group->RawPtr());
-    EC_POINT_mul(group->RawPtr(), result, NULL, point, num.RawPtr(), NULL);
+    auto tmp = EC_POINT_mul(group->RawPtr(), result, NULL, point, num.RawPtr(), nullptr);
+
+    if (tmp == 0) {
+        auto err = ERR_get_error();
+        throw std::runtime_error(std::string("BigNum * ECPoint: ") + ERR_reason_error_string(err));
+    }
+
     return ECPoint(group, result);
 }
 

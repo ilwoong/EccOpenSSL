@@ -25,6 +25,7 @@
 #include "ECBuilder.h"
 #include "ECGroupGFp.h"
 #include "ECGroupGF2m.h"
+#include "BasisConversion.h"
 
 using namespace ecc;
 
@@ -76,22 +77,31 @@ ECBuilder& ECBuilder::Y(const BigNum& y)
     return *this;
 }
 
+ECBuilder& ECBuilder::Root(const BigNum& root) {
+    this->root = root;
+    return *this;
+}
+
 EllipticCurve ECBuilder::BuildGFp() const
 {
     CheckParams();
 
+    auto conversion = BasisConversion(p, root);
+
     auto group = std::make_shared<ECGroupGFp>(fieldSize);
     group->SetParameters(p, order, a, b, x, y);
-    return EllipticCurve(group);
+    return EllipticCurve(group, conversion, order);
 }
 
 EllipticCurve ECBuilder::BuildGF2m() const
 {
     CheckParams();
 
+    auto conversion = BasisConversion(p, root);
+
     auto group = std::make_shared<ECGroupGF2m>(fieldSize);
     group->SetParameters(p, order, a, b, x, y);
-    return EllipticCurve(group);
+    return EllipticCurve(group, conversion, order);
 }
 
 void ECBuilder::CheckParams() const
@@ -118,5 +128,9 @@ void ECBuilder::CheckParams() const
 
     if (y.Empty()) {
         throw std::invalid_argument("ECBuilder: curve parameter y is empty");
+    }
+
+    if (root.Empty()) {
+        throw std::invalid_argument("ECBuilder: curve parameter root is empty");
     }
 }

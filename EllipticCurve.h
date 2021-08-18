@@ -28,9 +28,11 @@
 #include "BigNum.h"
 #include "ECGroup.h"
 #include "ECPoint.h"
+#include "BasisConversion.h"
 
 #include <vector>
 #include <memory>
+#include <utility>
 
 namespace ecc
 {
@@ -38,13 +40,17 @@ namespace ecc
     {
     public:
         std::shared_ptr<ECGroup> group;
-        BN_CTX *ctx;
-        BigNum prime;
+        BasisConversion conversion;
+        BigNum order;
 
     public:
-        EllipticCurve();
-        EllipticCurve(const std::shared_ptr<ECGroup>& group);
-        ~EllipticCurve();
+        EllipticCurve() = default;
+        ~EllipticCurve() = default;
+
+        EllipticCurve(const EllipticCurve& other);
+        EllipticCurve(const std::shared_ptr<ECGroup>& group, const BasisConversion& conversion, const BigNum& order);
+
+        EllipticCurve& operator=(const EllipticCurve& other);
 
         BigNum RandomScalar();
         BigNum Normalize(const BigNum& value) const;
@@ -58,6 +64,17 @@ namespace ecc
         std::vector<uint8_t> Point2VecCompressed(const ECPoint& point);
 
         BigNum Add(const BigNum& lhs, const BigNum& rhs) const;
+        ECPoint Add(const ECPoint& lhs, const ECPoint& rhs) const;
+
+        ECPoint Multiply(const BigNum& lhs, const ECPoint& rhs) const;
+
+        BigNum ConvertNB(const BigNum& pb) const;
+        BigNum ConvertPB(const BigNum& nb) const;
+
+        std::pair<BigNum, BigNum> ConvertNB(const ECPoint& point) const;
+
+        ECPoint ConvertPB(const std::vector<uint8_t>& x, uint8_t ybit) const;
+        ECPoint ConvertPB(const BigNum& x, const BigNum& y) const;
 
         bool IsValidPoint(const ECPoint& point) const;
     };
